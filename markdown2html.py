@@ -18,15 +18,11 @@ def main():
         sys.stderr.write(f"Missing {md_file}\n")
         exit(1)
 
-    try:
-        with open(md_file, 'r', encoding='utf-8') as md_filename:
-            md_content = md_filename.read()
-            html_content = markdown.markdown(md_content)
-    except UnicodeDecodeError:
-        sys.stderr.write(f"Error: {md_file} is not UTF-8 encoded\n")
-        exit(1)
+    with open(md_file, 'r') as md_filename:
+        md_content = md_filename.read()
+        html_content = markdown.markdown(md_content)
 
-    with open(html_file, 'w', encoding='utf-8') as html_filename:
+    with open(html_file, 'w') as html_filename:
         html_filename.write(html_content)
 
     exit(0)
