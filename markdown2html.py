@@ -7,7 +7,9 @@ import re
 
 
 def convert_markdown(md_content):
-    """ Convert Markdown headings, lists, paragraphs, bold and emphasis to HTML. """
+    """
+    Convert Markdown headings, lists, paragraphs, bold and emphasis to HTML.
+    """
     html_content = []
     in_ulist = False
     in_olist = False
