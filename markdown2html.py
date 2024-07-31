@@ -17,14 +17,14 @@ def detect_encoding(file_path):
 def main():
     """ Testing checker requierments2 """
     if len(sys.argv) < 3:
-        sys.stderr.write("Usage: ./markdown2html.py README.md README.html")
+        sys.stderr.write("Usage: ./markdown2html.py README.md README.html\n")
         exit(1)
 
     markdown_file = sys.argv[1]
     output_file = sys.argv[2]
 
     if not os.path.exists(markdown_file):
-        sys.stderr.write(f"Missing {markdown_file}")
+        sys.stderr.write(f"Missing {markdown_file}\n")
         exit(1)
 
     encoding = detect_encoding(markdown_file)
