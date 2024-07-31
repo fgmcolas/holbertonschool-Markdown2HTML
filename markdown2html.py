@@ -7,9 +7,13 @@ import re
 
 
 def convert_markdown(md_content):
-    """ Convert Markdown headings and unordered lists to HTML. """
+    """
+    Convert Markdown headings, unordered lists and ordered lists to HTML.
+    """
     html_content = []
     in_list = False
+    list_type = None
+    in_ordered_list = False
 
     for line in md_content.splitlines():
         match_heading = re.match(r'(#{1,6}) (.+)', line)
@@ -18,19 +22,40 @@ def convert_markdown(md_content):
             text = match_heading.group(2)
             html_content.append(f'<h{level}>{text}</h{level}>')
             in_list = False
+            in_ordered_list = False
         elif line.startswith('- '):
-            if not in_list:
+            if not in_list or list_type != 'ul':
+                if in_list:
+                    html_content.append('</ul>')
                 html_content.append('<ul>')
+                list_type = 'ul'
                 in_list = True
+                in_ordered_list = False
             html_content.append(f'<li>{line[2:]}</li>')
+        elif re.match(r'\d+\. ', line):
+            if not in_list or list_type != 'ol':
+                if in_list:
+                    html_content.append('</ol>')
+                html_content.append('<ol>')
+                list_type = 'ol'
+                in_list = True
+                in_ordered_list = True
+            html_content.append(f'<li>{line.split('. ', 1)[1]}</li>')
         else:
             if in_list:
-                html_content.append('</ul>')
+                if list_type == 'ul':
+                    html_content.append('</ul>')
+                elif list_type == 'ol':
+                    html_content.append('</ol>')
                 in_list = False
+                list_type = None
             html_content.append(line)
 
     if in_list:
-        html_content.append('</ul>')
+        if list_type == 'ul':
+            html_content.append('</ul>')
+        elif list_type == 'ol':
+            html_content.append('</ol>')
 
     return '\n'.join(html_content)
 
