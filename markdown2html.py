@@ -4,7 +4,6 @@
 import sys
 import os
 import markdown
-import chardet
 
 
 def main():
