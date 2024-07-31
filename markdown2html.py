@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+""" Script that convert Markdown to HTML """
 
 import sys
 import os
