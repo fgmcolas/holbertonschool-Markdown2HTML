@@ -7,14 +7,29 @@ import re
 
 
 def convert_markdown(md_content):
-    """ Convert Markdown headings and lists to HTML. """
+    """ Convert Markdown headings, lists, and paragraphs to HTML. """
     html_content = []
     in_ulist = False
     in_olist = False
+    in_paragraph = False
+    paragraph_lines = []
+
+    def close_paragraph():
+        nonlocal paragraph_lines, in_paragraph
+        if paragraph_lines:
+            html_content.append('<p>')
+            for i, line in enumerate(paragraph_lines):
+                if i > 0:
+                    html_content.append('<br/>')
+                html_content.append(line)
+            html_content.append('</p>')
+            paragraph_lines = []
+            in_paragraph = False
 
     for line in md_content.splitlines():
         match_heading = re.match(r'(#{1,6}) (.+)', line)
         if match_heading:
+            close_paragraph()
             level = len(match_heading.group(1))
             text = match_heading.group(2)
             html_content.append(f'<h{level}>{text}</h{level}>')
@@ -25,6 +40,7 @@ def convert_markdown(md_content):
                 html_content.append('</ol>')
                 in_olist = False
         elif line.startswith('- '):
+            close_paragraph()
             if in_olist:
                 html_content.append('</ol>')
                 in_olist = False
@@ -33,6 +49,7 @@ def convert_markdown(md_content):
                 in_ulist = True
             html_content.append(f'<li>{line[2:]}</li>')
         elif line.startswith('* '):
+            close_paragraph()
             if in_ulist:
                 html_content.append('</ul>')
                 in_ulist = False
@@ -47,8 +64,13 @@ def convert_markdown(md_content):
             if in_olist:
                 html_content.append('</ol>')
                 in_olist = False
-            html_content.append(line)
+            if line.strip():
+                paragraph_lines.append(line)
+                in_paragraph = True
+            else:
+                close_paragraph()
 
+    close_paragraph()
     if in_ulist:
         html_content.append('</ul>')
     if in_olist:
