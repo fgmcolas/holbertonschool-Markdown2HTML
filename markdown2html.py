@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """ Script that converts Markdown to HTML """
 
 import sys
@@ -17,7 +17,6 @@ def main():
     if not os.path.exists(md_file):
         sys.stderr.write(f"Missing {md_file}\n")
         exit(1)
-
 
     with open(md_file, 'r', encoding='utf-8') as md_filename:
         md_content = md_filename.read()
