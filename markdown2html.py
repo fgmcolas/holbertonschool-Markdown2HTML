@@ -7,7 +7,9 @@ import re
 
 
 def convert_markdown(md_content):
-    """ Convert Markdown headings and unordered lists to HTML. """
+    """
+    Convert Markdown headings, unordered lists and ordered lists to HTML.
+    """
     html_content = []
     in_list = False
     list_type = None
