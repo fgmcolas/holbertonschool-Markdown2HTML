@@ -31,8 +31,7 @@ def main():
 
     with open(markdown_file, 'r', encoding=encoding) as md_file:
         md_content = md_file.read()
-
-    html_content = markdown.markdown(md_content)
+        html_content = markdown.markdown(md_content)
 
     with open(output_file, 'w', encoding='utf-8') as html_file:
         html_file.write(html_content)
