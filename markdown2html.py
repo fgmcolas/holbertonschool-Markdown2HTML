@@ -5,6 +5,7 @@ import sys
 import os
 import markdown
 
+
 def main():
     if len(sys.argv) < 3:
         sys.stderr.write("Usage: ./markdown2html.py README.md README.html\n")
@@ -29,6 +30,7 @@ def main():
         sys.exit(1)
 
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
