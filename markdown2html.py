@@ -7,7 +7,7 @@ import re
 
 
 def convert_markdown(md_content):
-    """ Convert Markdown headings, lists, and paragraphs to HTML. """
+    """ Convert Markdown headings, lists, paragraphs, bold and emphasis to HTML. """
     html_content = []
     in_ulist = False
     in_olist = False
@@ -21,17 +21,23 @@ def convert_markdown(md_content):
             for i, line in enumerate(paragraph_lines):
                 if i > 0:
                     html_content.append('<br/>')
-                html_content.append(line)
+                html_content.append(apply_text_styles(line))
             html_content.append('</p>')
             paragraph_lines = []
             in_paragraph = False
+
+    def apply_text_styles(text):
+        """ Convert Markdown bold and emphasis to HTML. """
+        text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+        text = re.sub(r'__(.+?)__', r'<em>\1</em>', text)
+        return text
 
     for line in md_content.splitlines():
         match_heading = re.match(r'(#{1,6}) (.+)', line)
         if match_heading:
             close_paragraph()
             level = len(match_heading.group(1))
-            text = match_heading.group(2)
+            text = apply_text_styles(match_heading.group(2))
             html_content.append(f'<h{level}>{text}</h{level}>')
             if in_ulist:
                 html_content.append('</ul>')
@@ -47,7 +53,7 @@ def convert_markdown(md_content):
             if not in_ulist:
                 html_content.append('<ul>')
                 in_ulist = True
-            html_content.append(f'<li>{line[2:]}</li>')
+            html_content.append(f'<li>{apply_text_styles(line[2:])}</li>')
         elif line.startswith('* '):
             close_paragraph()
             if in_ulist:
@@ -56,7 +62,7 @@ def convert_markdown(md_content):
             if not in_olist:
                 html_content.append('<ol>')
                 in_olist = True
-            html_content.append(f'<li>{line[2:]}</li>')
+            html_content.append(f'<li>{apply_text_styles(line[2:])}</li>')
         else:
             if in_ulist:
                 html_content.append('</ul>')
