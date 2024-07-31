@@ -7,49 +7,52 @@ import re
 
 
 def convert_markdown(md_content):
-    """
-    Convert Markdown headings, unordered lists, and ordered lists to HTML.
-    """
+    """ Convert Markdown headings and lists to HTML. """
     html_content = []
-    in_list = False
-    list_type = None
+    in_ulist = False
+    in_olist = False
 
     for line in md_content.splitlines():
         match_heading = re.match(r'(#{1,6}) (.+)', line)
         if match_heading:
             level = len(match_heading.group(1))
             text = match_heading.group(2)
-            if in_list:
-                if list_type:
-                    html_content.append(f'</{list_type}>')
-                in_list = False
-                list_type = None
             html_content.append(f'<h{level}>{text}</h{level}>')
-        elif re.match(r'\d+\. ', line):
-            if not in_list or list_type != 'ol':
-                if in_list:
-                    html_content.append(f'</{list_type}>')
-                html_content.append('<ol>')
-                list_type = 'ol'
-                in_list = True
-            html_content.append(f'<li>{line.split(". ", 1)[1]}</li>')
+            if in_ulist:
+                html_content.append('</ul>')
+                in_ulist = False
+            if in_olist:
+                html_content.append('</ol>')
+                in_olist = False
         elif line.startswith('- '):
-            if not in_list or list_type != 'ul':
-                if in_list:
-                    html_content.append(f'</{list_type}>')
+            if in_olist:
+                html_content.append('</ol>')
+                in_olist = False
+            if not in_ulist:
                 html_content.append('<ul>')
-                list_type = 'ul'
-                in_list = True
+                in_ulist = True
+            html_content.append(f'<li>{line[2:]}</li>')
+        elif line.startswith('* '):
+            if in_ulist:
+                html_content.append('</ul>')
+                in_ulist = False
+            if not in_olist:
+                html_content.append('<ol>')
+                in_olist = True
             html_content.append(f'<li>{line[2:]}</li>')
         else:
-            if in_list:
-                html_content.append(f'</{list_type}>')
-                in_list = False
-                list_type = None
+            if in_ulist:
+                html_content.append('</ul>')
+                in_ulist = False
+            if in_olist:
+                html_content.append('</ol>')
+                in_olist = False
             html_content.append(line)
 
-    if in_list:
-        html_content.append(f'</{list_type}>')
+    if in_ulist:
+        html_content.append('</ul>')
+    if in_olist:
+        html_content.append('</ol>')
 
     return '\n'.join(html_content)
 
