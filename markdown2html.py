@@ -4,11 +4,13 @@
 import sys
 import os
 import re
+import hashlib
 
 
 def convert_markdown(md_content):
     """
-    Convert Markdown headings, lists, paragraphs, bold and emphasis to HTML.
+    Convert Markdown headings, lists, paragraphs, bold, emphasis,
+    and custom syntax to HTML.
     """
     html_content = []
     in_ulist = False
@@ -29,9 +31,13 @@ def convert_markdown(md_content):
             in_paragraph = False
 
     def apply_text_styles(text):
-        """ Convert Markdown bold and emphasis to HTML. """
+        """ Convert Markdown bold, emphasis, and custom syntax to HTML. """
         text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
         text = re.sub(r'__(.+?)__', r'<em>\1</em>', text)
+        text = re.sub(r'\[\[(.+?)\]\]', lambda m: hashlib.md5(
+            m.group(1).encode()).hexdigest(), text)
+        text = re.sub(r'\(\((.+?)\)\)', lambda m: re.sub(
+            r'[cC]', '', m.group(1)), text)
         return text
 
     for line in md_content.splitlines():
