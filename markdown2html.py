@@ -6,6 +6,7 @@ import os
 import markdown
 import chardet
 
+
 def main():
     if len(sys.argv) < 3:
         sys.stderr.write("Usage: ./markdown2html.py README.md README.html\n")
