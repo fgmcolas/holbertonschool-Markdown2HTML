@@ -20,20 +20,15 @@ def convert_markdown(md_content):
             level = len(match_heading.group(1))
             text = match_heading.group(2)
             if in_list:
-                if list_type == 'ul':
-                    html_content.append('</ul>')
-                elif list_type == 'ol':
-                    html_content.append('</ol>')
+                if list_type:
+                    html_content.append(f'</{list_type}>')
                 in_list = False
                 list_type = None
             html_content.append(f'<h{level}>{text}</h{level}>')
         elif re.match(r'\d+\. ', line):
             if not in_list or list_type != 'ol':
                 if in_list:
-                    if list_type == 'ul':
-                        html_content.append('</ul>')
-                    elif list_type == 'ol':
-                        html_content.append('</ol>')
+                    html_content.append(f'</{list_type}>')
                 html_content.append('<ol>')
                 list_type = 'ol'
                 in_list = True
@@ -41,29 +36,20 @@ def convert_markdown(md_content):
         elif line.startswith('- '):
             if not in_list or list_type != 'ul':
                 if in_list:
-                    if list_type == 'ul':
-                        html_content.append('</ul>')
-                    elif list_type == 'ol':
-                        html_content.append('</ol>')
+                    html_content.append(f'</{list_type}>')
                 html_content.append('<ul>')
                 list_type = 'ul'
                 in_list = True
             html_content.append(f'<li>{line[2:]}</li>')
         else:
             if in_list:
-                if list_type == 'ul':
-                    html_content.append('</ul>')
-                elif list_type == 'ol':
-                    html_content.append('</ol>')
+                html_content.append(f'</{list_type}>')
                 in_list = False
                 list_type = None
             html_content.append(line)
 
     if in_list:
-        if list_type == 'ul':
-            html_content.append('</ul>')
-        elif list_type == 'ol':
-            html_content.append('</ol>')
+        html_content.append(f'</{list_type}>')
 
     return '\n'.join(html_content)
 
