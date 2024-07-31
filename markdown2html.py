@@ -4,37 +4,30 @@
 import sys
 import os
 import markdown
-import chardet
-
-
-def detect_encoding(file_path):
-    """ Testing checker requierments1 """
-    with open(file_path, 'rb') as f:
-        result = chardet.detect(f.read())
-    return result['encoding']
 
 
 def main():
-    """ Testing checker requierments2 """
     if len(sys.argv) < 3:
         sys.stderr.write("Usage: ./markdown2html.py README.md README.html\n")
         exit(1)
 
-    markdown_file = sys.argv[1]
-    output_file = sys.argv[2]
+    md_file = sys.argv[1]
+    html_file = sys.argv[2]
 
-    if not os.path.exists(markdown_file):
-        sys.stderr.write(f"Missing {markdown_file}\n")
+    if not os.path.exists(md_file):
+        sys.stderr.write(f"Missing {md_file}\n")
         exit(1)
 
-    encoding = detect_encoding(markdown_file)
+    try:
+        with open(md_file, 'r', encoding='utf-8') as md_filename:
+            md_content = md_filename.read()
+            html_content = markdown.markdown(md_content)
+    except UnicodeDecodeError:
+        sys.stderr.write(f"Error: {md_file} is not UTF-8 encoded\n")
+        exit(1)
 
-    with open(markdown_file, 'r', encoding=encoding) as md_file:
-        md_content = md_file.read()
-        html_content = markdown.markdown(md_content)
-
-    with open(output_file, 'w', encoding='utf-8') as html_file:
-        html_file.write(html_content)
+    with open(html_file, 'w', encoding='utf-8') as html_filename:
+        html_filename.write(html_content)
 
     exit(0)
 
