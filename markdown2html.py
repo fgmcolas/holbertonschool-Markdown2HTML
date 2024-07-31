@@ -6,13 +6,6 @@ import os
 import markdown
 import chardet
 
-
-def detect_encoding(file_path):
-    """ Testing checker requierments1 """
-    with open(file_path, 'rb') as f:
-        result = chardet.detect(f.read())
-    return result['encoding']
-
 def main():
     if len(sys.argv) < 3:
         sys.stderr.write("Usage: ./markdown2html.py README.md README.html\n")
