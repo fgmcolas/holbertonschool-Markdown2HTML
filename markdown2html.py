@@ -4,26 +4,36 @@
 import sys
 import os
 import markdown
+import chardet
+
+
+def detect_encoding(file_path):
+    with open(file_path, 'rb') as f:
+        result = chardet.detect(f.read())
+    return result['encoding']
 
 
 def main():
-    if len(sys.argv) < 3:
-        sys.stderr.write("Usage: ./markdown2html.py README.md README.html\n")
+    if len(sys.argv) != 3:
+        sys.stderr.write("Usage: ./markdown2html.py README.md README.html")
         exit(1)
 
-    md_file = sys.argv[1]
-    html_file = sys.argv[2]
+    markdown_file = sys.argv[1]
+    output_file = sys.argv[2]
 
-    if not os.path.exists(md_file):
-        sys.stderr.write(f"Missing {md_file}\n")
+    if not os.path.isfile(markdown_file):
+        print(f"Missing {markdown_file}", file=sys.stderr)
         exit(1)
 
-    with open(md_file, 'r') as md_filename:
-        md_content = md_filename.read()
-        html_content = markdown.markdown(md_content)
+    encoding = detect_encoding(markdown_file)
 
-    with open(html_file, 'w') as html_filename:
-        html_filename.write(html_content)
+    with open(markdown_file, 'r', encoding=encoding) as md_file:
+        md_content = md_file.read()
+
+    html_content = markdown.markdown(md_content)
+
+    with open(output_file, 'w', encoding='utf-8') as html_file:
+        html_file.write(html_content)
 
     exit(0)
 
